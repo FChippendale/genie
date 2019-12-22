@@ -6,6 +6,9 @@ import os
 import tensorflow as tf
 import keras
 
+import pytesseract
+pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Felix Chippendale\AppData\Local\Tesseract-OCR\tesseract.exe'
+
 %matplotlib inline
 
 def img_resize(img, img_size):
@@ -171,7 +174,7 @@ def extract_digits(image, num_digits = 8, remove_last = True):
         digits = digits[:-1:]
         
     digits_resized = [img_resize(digit, (28, 28)) for digit in digits]
-    digits_thresh = [np.where(digit > 70, 255, 0) for digit in digits_resized]
+    digits_thresh = [np.where(digit > 70, 1, 0) for digit in digits_resized]
     digits_clipped = [remove_border(digit) for digit in digits_thresh]
     digits_clean = [find_digit(digit) for digit in digits_clipped]
     digits_centered = [center_digit(digit) for digit in digits_clean]
@@ -201,6 +204,15 @@ def infer_digit(digit, model):
     prediction = model.predict(digit)
     return np.argmax(prediction)
 
+def infer_digit_ocr(digit):
+    digit_flip = np.where(digit == 0, 255, 0)
+    digit_large = img_resize(np.uint8(digit_flip), (256, 256))
+    text = pytesseract.image_to_string(digit_large, lang='eng', config='--psm 13 --oem 3 -c tessedit_char_whitelist=0123456789')
+    if text != '':
+        return int(text)
+    return 0
+            
+
 def main():
     model = load_model()
     for img in open_all_images():
@@ -208,9 +220,12 @@ def main():
         digits = extract_digits(thresh, num_digits = 8, remove_last = True)
         display_digits(digits)
         total = 0
+        total_ocr = 0
         for i, digit in enumerate(digits):
+            total_ocr += infer_digit_ocr(digit) * 10 ** (7 - i)
             digit = digit.reshape(1, 28, 28, 1)
             total += infer_digit(digit, model) * 10 ** (7 - i)
-        print(total)
+        #print('total: ', total)
+        print('total_ocr: ', total_ocr)
         
 main()
