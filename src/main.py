@@ -37,11 +37,8 @@ def extract_roi(image, img_size = (156,34), verbose = False):
     img = image.copy()
 
     gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    # reduce noise
-    # blur = cv2.GaussianBlur(gray, (3, 3), 0)
-    blur = gray
     # edge detection using Canny
-    canny = cv2.Canny(blur, 50, 150)
+    canny = cv2.Canny(gray, 50, 150)
 
     contours, hierarch = cv2.findContours(canny.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
