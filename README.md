@@ -11,4 +11,5 @@ Classifies digits via tesseract ocr package and CNN trained on the MNIST dataset
 
 TODO:
 - Retrain network with more variation to better identify digits
+- Add debug mode
 
