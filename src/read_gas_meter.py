@@ -265,7 +265,7 @@ def read_gas_meter(mode, source, model_path, debug = False):
         list (str, int) containing name and value read from each image processed
     """
         
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Felix Chippendale\AppData\Local\Tesseract-OCR\tesseract.exe'
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Users\FChippendale\AppData\Local\Tesseract-OCR\tesseract.exe'
     
     if mode == 'image_direct':
         input_images = [('NA', np.uint8(source))]
